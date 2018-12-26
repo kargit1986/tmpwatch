@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  creds.json: |
+    {
+    "type": "service_account",
+    "project_id": "qtg-shared-mgmt-1t",
+    "private_key_id": "5c41413985f00e1dc25200b757964ece08fcef15",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDY8OH7uCODtG5k\nfdBKc8Gb8mgqzzvLARi6pFwNbSgA5FgPeNVCAZdL/KK6aWxu41TyWWqXp0CgtkQN\nuPNzGsP3fAStMheIQeKEBVmd7dbe2Vp4ykV83uqZfEABmaiigc1r/gEFFIzUvQnz\n6Z0Tqn/r8kluCkD0cYvcfLakRqG5hph0ToGl8AtF/LN0qFqciTiYv2578vCcFVH2\n6vJtms+geOX5q8un8LPz+fjGJlBtChBis9DkcJWTKv3w3aXHq89fvDUrUQqob3qG\n9JPqzSunk3ao3mgAsi2LlgcqFvE67KNfTKU8ytwP+Wm3vBOVeG6uhlxYTH2ScTdt\nwKo8tUDjAgMBAAECggEANZcv5AxlbYwddyKjWTkGO11jASxHU4s2Tij6+nAcIThH\nTq8lU1RsSR+kHVOcrznmSqXvEH6HFwxffFpTfXw/q7vNtfE5YfYQnFdr/3j5Cvz7\nffpNtx6kKn1InHyWbWqOUd6h5tzgO09ljYUIwgps5l7oZ9ANorUH/VQrlCJEoj0a\nkTwpVX5c2Ya9UJWSvjDHe97pW+d5/Tgs/GHkGZjF0BKtYtgUue0kLZvy3RhG1SYL\n70o6PMs9ay/zP+daSrAOqet/reOPe8NK84MYqijgj4Ge5tzy/GnJWs2yDaTaoXeh\nt6CX5x1382LhmA+MoO7xw1KfyN8wd2qqZ14fNCI/pQKBgQD2UypNpmQqdLn0cgnF\n8dKLLjNsM4bHzRwr/ANwpipviQBRMsWPDM1kyIUARjHbRXPOmJhmB8zqCSZCKTYZ\nkFafGpGnpynt/EcogMa4Iqb/gU4m2Vd06EceHTmyARCkvKokQ6jln4RgsopfEqA9\nftOglAwGad5/NZoQ6GqC7YUK5wKBgQDhdkH2KP8PfYv6MzSviVEX/9wzEWupufqv\n1Z6wjaM4+zrLKhnZLO7riarGHqxAAFl+zCsINLt7DPMqpSpS3uUF/MHY6bzgU3eu\nWYsEL+tej/G8LvGFlCP4T70RuLdbfIo4V4qM6l1GXvZb9niHBm9AkUXP4Q1xlpgj\nvsSWpIO2pQKBgQCmQo4cKUIUsgLNrqdQFyAgV0fYMZM4iwYH3itIPrAH5nXzWIym\nOGLuMrYq8DY4pVE8Uh0TSRKTqSdMotpkONtuupUzjw4rFwvEl98JbEJB1To12J9C\nRoGyHtHRhwx/1OQWZCC9FIVaa0ggUcccmt0m1qajMZQ/UqOx4934j28sYwKBgEZU\nGDFMCnvvgqlyLZ4P7G7bDfoUFgxkihEtRon2NJMCsw1KvbNj88cfM1kHml2Afmoy\nD75IjK7OlE+aI8Cj7LbYaDNcfeFPyAZnwhh1RitCJXq4/ffYBPxhCy4q+28bQxZe\nIEbimGPqHVkEYgZkeHGgnzFAF2x2OFD2IeaHvNpNAoGAXaGZWTYJlrJDlmeWXcS3\n9dchxnc/A4XXD6z3QFlrxnIh72NU9b7LlCN3gkKVRVAZB0NsbZ+A7Alxp4IAQB9d\n3c3i/AGhDAvdgJLr+Ux1EhawpmQopx+yhWcU3UZKflbhuboVm3IAMwFdXSQMi/2T\nFnAH5pcYJk7hd22xRWXUzR4=\n-----END PRIVATE KEY-----\n",
+    "client_email": "qtg-jaguar-vault-sa-1f@qtg-shared-mgmt-1t.iam.gserviceaccount.com",
+    "client_id": "111862687760766404611",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/qtg-jaguar-vault-sa-1f%40qtg-shared-mgmt-1t.iam.gserviceaccount.com"
+    }
+kind: ConfigMap
+metadata:
+  name: vault-gke-credentials
+  namespace: default
+

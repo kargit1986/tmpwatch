@@ -1,0 +1,14 @@
+"storage": {
+    "gcs": {
+        "bucket": "vaultbck",
+    }
+}
+
+
+"storage":{
+    "consul":{"address":"poc-consul:8500",
+              "path":"vault"
+             }
+         },
+   "ui": true
+   }

@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2018-12-26T09:22:06Z"
+  labels:
+    chart: consul-3.4.0
+    component: poc-consul
+    heritage: Tiller
+    release: poc
+  name: poc-consul
+  namespace: default
+  resourceVersion: "12697"
+  selfLink: /api/v1/namespaces/default/services/poc-consul
+  uid: b6ddb2b0-08ef-11e9-9b38-42010a8001d2
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8500
+    protocol: TCP
+    targetPort: 8500
+  - name: rpc
+    port: 8400
+    protocol: TCP
+    targetPort: 8400
+  - name: serflan-tcp
+    port: 8301
+    protocol: TCP
+    targetPort: 8301
+  - name: serflan-udp
+    port: 8301
+    protocol: UDP
+    targetPort: 8301
+  - name: serfwan-tcp
+    port: 8302
+    protocol: TCP
+    targetPort: 8302
+  - name: serfwan-udp
+    port: 8302
+    protocol: UDP
+    targetPort: 8302
+  - name: server
+    port: 8300
+    protocol: TCP
+    targetPort: 8300
+  - name: consuldns-tcp
+    port: 8600
+    protocol: TCP
+    targetPort: 8600
+  - name: consuldns-udp
+    port: 8600
+    protocol: UDP
+    targetPort: 8600
+  selector:
+    component: poc-consul
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

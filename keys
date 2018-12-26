@@ -1,0 +1,23 @@
+-----------vault consul ---------------------
+
+Unseal Key 1: yOEzxvxaFzaASRetrXPpYpKDOd83FxhoFxfIO90SRZNm
+Unseal Key 2: WNmQfgJN0dvV8UxB3HJyztP7Oes7/DE8Xbztsok0Nim5
+Unseal Key 3: VhXybbs2fGBb+2z5pDm20rtVV0aCGKEShQwWxVnYpFIr
+Unseal Key 4: ZyMQ4X0Qxi3hJF3EIYbvp0Bf43DIy9c+f3yDoESohYrQ
+Unseal Key 5: mDoTeNDPAvQT4J6jmuE4+0oBiEWUmarFPnXWAH3ZZh8w
+
+Initial Root Token: hLr9uVF4SAU71hqYfvjRc7jh
+
+--------------------------------------------------
+
+
+----------vault gcs --------------------------------
+Unseal Key 1: 7YM3uUiuIxNCStsMRV2lw+5kD9wbcUgvTM+78BZSSQBq
+Unseal Key 2: 87JsRKtM7FI+pfoLlSRXQlFS6WXlWtlNPlFe0Gaok3P+
+Unseal Key 3: 9HR9eq8CDRAwrxzeUwzBMpio50OdicH4w4QZdGIWcGgf
+Unseal Key 4: yxQOyw5mvkOLZdER4s9Dlv/DnnHKkTU9ATcKLxbtsohQ
+Unseal Key 5: O1wTT7YDkYxv5ewXeffInjVoSCb1IC1RSZNNwkHyv38c
+
+Initial Root Token: 3GcYVcG2EHRSgjn7zXBQ0Fzt
+
+-----------------------------------------------------

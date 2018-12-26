@@ -1,0 +1,170 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  generation: 3
+  labels:
+    chart: consul-3.4.0
+    component: poc-consul
+    heritage: Tiller
+    release: poc
+  name: poc-consul
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: poc-consul
+      release: poc
+  serviceName: poc-consul
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        chart: consul-3.4.0
+        component: poc-consul
+        heritage: Tiller
+        release: poc
+      name: poc-consul
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - poc-consul
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - command:
+        - /bin/sh
+        - -ec
+        - |
+          IP=$(hostname -i)
+          if [ -e /etc/consul/secrets/gossip-key ]; then
+            echo "{\"encrypt\": \"$(base64 /etc/consul/secrets/gossip-key)\"}" > /etc/consul/encrypt.json
+            GOSSIP_KEY="-config-file /etc/consul/encrypt.json"
+          fi
+
+          for i in $(seq 0 $((${INITIAL_CLUSTER_SIZE} - 1))); do
+              while true; do
+                  echo "Waiting for ${STATEFULSET_NAME}-${i}.${STATEFULSET_NAME} to come up"
+                  ping -W 1 -c 1 ${STATEFULSET_NAME}-${i}.${STATEFULSET_NAME}.${STATEFULSET_NAMESPACE}.svc > /dev/null && break
+                  sleep 1s
+              done
+          done
+
+          PEERS=""
+          for i in $(seq 0 $((${INITIAL_CLUSTER_SIZE} - 1))); do
+            NEXT_PEER="$(ping -c 1 ${STATEFULSET_NAME}-${i}.${STATEFULSET_NAME}.${STATEFULSET_NAMESPACE}.svc | awk -F'[()]' '/PING/{print $2}')"
+            if [ "${NEXT_PEER}" != "${POD_IP}" ]; then
+              PEERS="${PEERS}${PEERS:+ } -retry-join ${STATEFULSET_NAME}-${i}.${STATEFULSET_NAME}.${STATEFULSET_NAMESPACE}.svc"
+            fi
+          done
+
+          exec /bin/consul agent \
+            -ui \
+            -domain=consul \
+            -data-dir=/var/lib/consul \
+            -server \
+            -bootstrap-expect=${INITIAL_CLUSTER_SIZE} \
+            -disable-keyring-file \
+            -bind=0.0.0.0 \
+            -advertise=${IP} \
+            ${PEERS} \
+            ${GOSSIP_KEY} \
+            -client=0.0.0.0 \
+            -dns-port=${DNSPORT} \
+            -http-port=8500
+        env:
+        - name: INITIAL_CLUSTER_SIZE
+          value: "3"
+        - name: STATEFULSET_NAME
+          value: poc-consul
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: STATEFULSET_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: DNSPORT
+          value: "8600"
+        image: consul:1.0.0
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - consul
+            - members
+          failureThreshold: 3
+          initialDelaySeconds: 300
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: poc-consul
+        ports:
+        - containerPort: 8500
+          name: http
+          protocol: TCP
+        - containerPort: 8400
+          name: rpc
+          protocol: TCP
+        - containerPort: 8301
+          name: serflan-tcp
+          protocol: TCP
+        - containerPort: 8301
+          name: serflan-udp
+          protocol: UDP
+        - containerPort: 8302
+          name: serfwan-tcp
+          protocol: TCP
+        - containerPort: 8302
+          name: serfwan-udp
+          protocol: UDP
+        - containerPort: 8300
+          name: server
+          protocol: TCP
+        - containerPort: 8600
+          name: consuldns-tcp
+          protocol: TCP
+        - containerPort: 8600
+          name: consuldns-udp
+          protocol: UDP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/consul
+          name: datadir
+        - mountPath: /etc/consul/secrets
+          name: gossip-key
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: gossip-key
+        secret:
+          defaultMode: 420
+          secretName: poc-consul-gossip-key
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      creationTimestamp: null
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+

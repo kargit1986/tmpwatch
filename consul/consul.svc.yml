@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    chart: consul-3.4.0
+    component: poc-consul
+    heritage: Tiller
+    release: poc
+  name: poc-consul-ui
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8500
+  selector:
+    component: poc-consul
+  type: LoadBalancer

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vault
+    chart: vault-0.14.1
+    heritage: Tiller
+    release: exciting-jaguar
+  name: exciting-jaguar-vault
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: api
+    port: 80
+    protocol: TCP
+    targetPort: 8200
+  selector:
+    app: vault
+    release: exciting-jaguar
+  sessionAffinity: None
+  type: LoadBalancer
+

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gcs-vault
+    chart: vault-0.14.1
+    heritage: Tiller
+  name: gcs-exciting-jaguar-vault
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: api
+    port: 80
+    protocol: TCP
+    targetPort: 8200
+  selector:
+    app: gcs-vault
+  sessionAffinity: None
+  type: LoadBalancer
+

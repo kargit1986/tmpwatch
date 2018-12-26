@@ -1,0 +1,106 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: gcs-vault
+    chart: vault-0.14.1
+    heritage: Tiller
+  name: gcs-exciting-jaguar-vault
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gcs-vault
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gcs-vault
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: gcs-exciting-jaguar-vault
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - command:
+        - vault
+        - server
+        - -config
+        - /vault/config/config.json
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /vault/creds/creds.json
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: VAULT_CLUSTER_ADDR
+          value: https://$(POD_IP):8201
+        - name: VAULT_LOG_LEVEL
+          value: info
+        image: vault:0.11.2
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 8200
+          timeoutSeconds: 1
+        name: vault
+        ports:
+        - containerPort: 8200
+          name: api
+          protocol: TCP
+        - containerPort: 8201
+          name: cluster-address
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /v1/sys/health?standbycode=204&uninitcode=204&
+            port: 8200
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /vault/config/
+          name: vault-config
+        - mountPath: /vault/creds/
+          name: vault-credentials-config
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: gcs-exciting-jaguar-vault-config
+        name: vault-config
+      - configMap:
+          defaultMode: 420
+          name: gcs-vault-gke-credentials
+        name: vault-credentials-config
+
