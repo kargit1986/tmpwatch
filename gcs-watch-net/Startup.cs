@@ -18,6 +18,8 @@ using Google.Cloud.PubSub.V1;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace gcs_watch_net
 {
@@ -26,19 +28,45 @@ namespace gcs_watch_net
         public int Version { get; set; }
         public bool IsDeleted { get; set; }
     }
+
+
     public class Startup
     {
         const string ProjectId = "api-7805202409062569548-609752";
-        const string bucketName = "testbuck1111111";
+        const string BucketName = "testbuck1111111";
+        const string SubsciptionId =  "vaultsb";
+        const string topicId = "vaultchange";
         public async Task GetFromStorage()
         {
             var client = await StorageClient.CreateAsync();
             MemoryStream ms = new MemoryStream();
-            await client.DownloadObjectAsync(bucketName,"data.json",ms);
+            await client.DownloadObjectAsync(BucketName,"data.json",ms);
             ms.Position = 0;
             var str = Encoding.Default.GetString(ms.ToArray());
             Console.WriteLine("stirng is ");
             Console.WriteLine(str);
+        }
+
+        public async Task InitPubSub()
+        {
+            TopicName topicName = new TopicName(ProjectId, topicId);
+            SubscriberServiceApiClient subscriberService = await SubscriberServiceApiClient.CreateAsync();
+            SubscriptionName subscriptionName = new SubscriptionName(ProjectId, SubsciptionId);
+            SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
+            await subscriber.StartAsync((msg,token) =>
+            {
+                var attributes = msg.Attributes.Values;
+                foreach(var attrib in attributes)
+                {
+                    if(attrib.Contains("metadata"))
+                    {
+                            return Task.FromResult(SubscriberClient.Reply.Ack);
+                    }
+                }
+
+                Console.WriteLine("event fired...");
+                return Task.FromResult(SubscriberClient.Reply.Ack);
+            });
         }
         public async Task SaveToStorage(string jsonData) 
         {
@@ -46,7 +74,7 @@ namespace gcs_watch_net
             {
                 var client = await StorageClient.CreateAsync();
                 var content = Encoding.UTF8.GetBytes(jsonData);
-                await client.UploadObjectAsync(bucketName,
+                await client.UploadObjectAsync(BucketName,
                                                     "data.json",
                                                     "text/plain",
                                                     new MemoryStream(content));
@@ -55,7 +83,6 @@ namespace gcs_watch_net
             {
                 Console.WriteLine(exc.Message);
             }
-            
         }
 
         public async Task StartVault() 
@@ -74,7 +101,7 @@ namespace gcs_watch_net
                     var versions = keyValue.Data.Versions;
                     foreach(var version in versions) 
                     {
-                        var versionNum = int.Parse(version.Key);
+                       var versionNum = int.Parse(version.Key);
                        var isDeleted = !string.IsNullOrWhiteSpace(version.Value.DeletionTime);
                        metadatas.Add(new SecretMetadata 
                        {
@@ -126,8 +153,12 @@ namespace gcs_watch_net
             }
 
             app.UseMvc();
+            // Task.Run(async () => {
+            //     await  StartVault();
+            // });
+
             Task.Run(async () => {
-                await  StartVault();
+                await InitPubSub();
             });
           
         }
